@@ -1,0 +1,82 @@
+
+##The scripts calculates tpm for HTSeqCount output
+## Two inputs required:
+######## 1. Gene length
+######## File Format is as follows
+######## File should not contain header in tab separated format
+
+# Gene116g	2138
+# Gene132g	1345
+# Gene154g	909
+# Gene165g	1104
+
+######## 2. Path of directory containing HtSeqCount output
+######## Containing gene name and count in tab separated format
+
+# Gene1028	80
+# Gene187g	141
+# Gene209g	103
+# Gene231g	31
+
+######## Call the Function as
+######## CalculateTpmSingleSample("/home/RNASeq/HtSeqCountOut/", "Gene_length.txt")
+
+
+CalculateTpmSingleSample=function(Dir_path,length_file){
+require("xlsx")
+require("xlsxjars")
+library(plyr)
+library(dplyr)
+library(Biostrings)
+library(stringr)
+
+fileName <- list.files(path=Dir_path, pattern="*_HTSeqCount.txt", full.names=T, recursive=FALSE)
+length(fileName)
+
+GeneLength = read.table(length_file, sep="\t", header=F)
+
+
+for(i in 1:length(fileName)){
+          
+          
+          ##ReadFiles And Ignore last 5 lines **for HTSeqCount
+          HtSeqCount  = read.table(fileName[i], sep="\t", header=F,nrows=length(readLines(fileName[i])) - 5)
+          
+          
+          #HtSeqCount  = read.table(fileName[i], sep="\t", header=F)
+          
+          length = rep(NA, nrow(HtSeqCount))
+          data = data.frame( HtSeqCount, length)
+          data$length = GeneLength$V2[match(data$V1, GeneLength$V1)]
+          
+          colnames(data)= c("locus","HtSeqCount", "length")
+          data[is.na(data)] = 0
+          
+          TnC = rep(NA, nrow(HtSeqCount))
+          
+          TnC = data$HtSeqCount/data$length
+          data = data.frame( data, TnC)
+
+          is.na(data) <- sapply(data, is.infinite)
+          data[is.na(data)] = 0
+          
+          
+          RPK = colSums(data[,c(2:4)])
+          tpm = rep(NA, nrow(HtSeqCount))
+          
+          data = data.frame(data,tpm)
+          
+          
+          ##Calculate tpm
+          
+          data$tpm = ((HtSeqCount[,2]*(1e6))/(RPK[3]*data$length))
+          
+          data[is.na(data)] = 0
+          output = data.frame(data[,c(1,2,5)])
+          print(head(data,50))
+          
+          write.table(output, file=paste(fileName[i],"tpm.out",sep="_"), sep="\t", col.names = T, row.names = F,quote=F)
+          print(fileName[i])
+}
+
+}
