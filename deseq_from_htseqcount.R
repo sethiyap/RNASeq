@@ -1,15 +1,15 @@
 #rm(list=ls())
-
 #-- provide directory with htseq-count output files
 dir = (".")
+
 #-- define the pattern of files to be analysed, the file shold end as _HtSeqCount.txt
 pattern="Org_.*_HtSeqCount.txt"
 
 #-- provide metadata file containg file names and their the replicate information as below
 metadata_file <- "metadata.txt"
 
-#' Title: deseq_from_htseqcount(dir, pattern,metadata_file, "treatment_control")
-#' deseq_from_htseqcount(dir, pattern,metadata_file, "treatment_control")
+#' Title: deseq_from_htseqcount
+#' deseq_from_htseqcount
 #' @param dir 
 #' @param pattern 
 #' @param metadata_file 
