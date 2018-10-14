@@ -9,7 +9,7 @@ pattern="Org_.*_HtSeqCount.txt"
 metadata_file <- "metadata.txt"
 
 #' Title: deseq_from_htseqcount
-#' deseq_from_htseqcount
+#' deseq_from_htseqcount(dir, pattern,metadata_file, "treatment_control")
 #' @param dir 
 #' @param pattern 
 #' @param metadata_file 
